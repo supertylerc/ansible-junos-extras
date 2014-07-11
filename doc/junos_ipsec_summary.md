@@ -1,20 +1,6 @@
-# ansible-junos-ipsec
+# junos_ipsec_summary
 
 ## About
-
-## Installation
-
-Run the following commands:
-
-```bash
-mkdir $HOME/src && cd $_
-git clone https://github.com/supertylerc/ansible-junos-ipsec.git
-cd
-echo "source $HOME/src/ansible-junos-ipsec/env-setup" >> $HOME/.zshrc
-```
-
-> I make a lot of assumptions (source directory, $SHELL, etc).  Adjust
-> the instructions for your preferred environment.
 
 ## Usage
 
@@ -23,7 +9,6 @@ echo "source $HOME/src/ansible-junos-ipsec/env-setup" >> $HOME/.zshrc
 The below playbook might be called `junos_ipsec.yml`.
 
 ```yaml
----
 ---
 - name: IPSec
   hosts: fw01.hq.example.com
@@ -124,24 +109,11 @@ you should put the IP addresses of the IPSec peers you're interested in.
 
 ## Known Issues
 
-* No Continuous Integration Tests/Validators
-
-This issue is not insurmountable; however, it was decided that this
-issue should not block the first alpha release.
-
-### Contributing!
-
-Please contribute!  If you can help resolve these issues, that would be
-awesome.  Or any other issues you discover or features you want.
-
-## Credits
-
-* [Jeremy Schulman][5] - For creating [ansible-junos-stdlib][6], the
-  inspiration and basis of this module.
+* No default value for `peers`
 
 ## Version
 
-`0.1.0`
+`1.0.0`
 
 ## Author
 
@@ -158,5 +130,3 @@ Tyler Christiansen
 [2]: https://twitter.com/oss_stack "Tyler Christiansen (@oss_stack) on Twitter"
 [3]: http://opensource.org/licenses/BSD-2-Clause "BSD 2-Clause License"
 [4]: LICENSE "BSD 2-Clause License"
-[5]: https://twitter.com/nwkautomaniac "Jeremy Schulman (@nwkautomaniac) on Twitter"
-[6]: https://github.com/Juniper/ansible-junos-stdlib "Ansible Junos Module"
