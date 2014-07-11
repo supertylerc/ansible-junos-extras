@@ -8,6 +8,15 @@ functions, but they largely focus on retrieving operational data.
 
 ## Installation
 
+### Latest
+
+The `master` branch is considered the latest and greatest.  If you are
+paranoid about stability, though, you should follow the instructions for
+the latest stable tag.
+
+> Despite the above statement, `master` is always considered stable and
+> is used as the production release internally.
+
 Run the following commands:
 
 ```bash
@@ -19,6 +28,24 @@ echo "source $HOME/src/ansible-junos-extras/env-setup" >> $HOME/.zshrc
 
 > I make a lot of assumptions (source directory, $SHELL, etc).  Adjust
 > the instructions for your preferred environment.
+
+### Latest Stable Tag
+
+Tagged versions are guaranteed more stable than the `master` branch.  If
+you're overly paranoid, you should grab the latest tagged version that
+coincides with your current `major`.`minor` release.  If you're using
+1.0.x, for example, you should grab the latest tagged release for 1.0.x.
+If you're using 1.0.x and you're overly paranoid, you should _not_ get
+any of the 1.1.x tagged releases without testing thoroughly first.
+
+To get a tagged release:
+
+```bash
+mkdir $HOME/src && cd $_
+git clone https://github.com/supertylerc/ansible-junos-extras.git -b v1.0.0
+cd
+echo "source $HOME/src/ansible-junos-extras/env-setup" >> $HOME/.zshrc
+```
 
 ## Usage
 
