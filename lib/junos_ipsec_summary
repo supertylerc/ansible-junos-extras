@@ -1,0 +1,101 @@
+#!/usr/bin/env python2.7
+
+DOCUMENTATION = '''
+---
+module: junos_ipsec_summary
+author: Tyler Christiansen
+version_added: "0.0.1"
+short_description: Get IPSec Info
+description:
+  - Gets IKE Phase 1 & 2 Info for Specified Peers
+requirements:
+  - py-junos-eznc
+options:
+  host:
+    description:
+      - should be {{ inventory_hostname }}
+    required: true
+  user:
+    description:
+      - login user-name
+    required: false
+    default: $USER
+  peers:
+    description:
+      - list of gateway IPs of remote IPSec peers
+    required: true
+  passwd:
+    description:
+      - login password
+    required: false
+    default: assumes ssh-key
+'''
+
+import sys
+from jnpr.junos import Device
+import json
+import ast
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(
+            host=dict(required=True),
+            user=dict(required=False, default='tyler'),
+            passwd=dict(required=False, default=None),
+            peers=dict(required=True)),
+        supports_check_mode=False)
+
+    m_args = module.params
+    m_results = dict(changed=False)
+    dev = Device(m_args['host'], user=m_args['user'], passwd=m_args['passwd'])
+    m_args['peers'] = ast.literal_eval(m_args['peers'])
+    try:
+        dev.open()
+    except Exception as err:
+        msg = 'unable to connect to {}: {}'.format(m_args['host'], str(err))
+        module.fail_json(msg=msg)
+        return
+    results = {"ike": {}, "ipsec": {}}
+    for peer in m_args['peers']:
+        try:
+            sa_info = dev.rpc.get_ike_security_associations_information(peer_address=peer)
+        except Exception as err:
+            msg = 'unable to get peer info for {}: {}'.format(peer, str(err))
+            module.fail_json(msg=msg)
+            return
+        for item in sa_info:
+            base = 'ike-security-associations-information'
+            p = base + '/ike-security-associations'
+            sa = item.findtext(p)
+            if sa:
+                p = base + '/ike-security-associations/ike-sa-index'
+                index = item.findtext(p)
+                p = base + '/ike-security-associations/ike-sa-state'
+                state = item.findtext(p)
+                results["ike"][index] = {"index": index,
+                                         "address": peer,
+                                         "state": state}
+        try:
+            sa_info = dev.rpc.get_security_associations_information(detail=True)
+        except Exception as err:
+            msg = "can't to get ipsec sa info for {}: {}".format(peer, str(err))
+            module.fail_json(msg=msg)
+            return
+        p = 'multi-routing-engine-item/ipsec-security-associations-information'
+        sa_info = sa_info.find(p)
+        for sa in sa_info:
+            peer_ip = sa.findtext('sa-remote-gateway')
+            vpn_name = sa.findtext('sa-vpn-name')
+            state = sa.findtext('sa-block-state')
+            index = sa.findtext('sa-tunnel-index')
+            interface = sa.findtext('sa-df-bit-policy-name/sa-bind-interface')
+            if peer_ip == peer:
+                results['ipsec'][index] = {"index": index,
+                                           "address": peer,
+                                           "name": vpn_name,
+                                           "state": state,
+                                           "interface": interface}
+    dev.close()
+    module.exit_json(results=results)
+from ansible.module_utils.basic import *
+main()
