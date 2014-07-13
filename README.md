@@ -1,3 +1,4 @@
+[![Issues in Pending](https://badge.waffle.io/supertylerc/ansible-junos-extras.png?label=pending&title=Pending)](https://waffle.io/supertylerc/ansible-junos-extras)
 [![Issues in Ready](https://badge.waffle.io/supertylerc/ansible-junos-extras.png?label=ready&title=Ready)](https://waffle.io/supertylerc/ansible-junos-extras)
 [![Issues In Progress](https://badge.waffle.io/supertylerc/ansible-junos-extras.png?label=in%20progress&title=In%20Progress)](https://waffle.io/supertylerc/ansible-junos-extras)
 
