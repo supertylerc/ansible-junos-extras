@@ -31,7 +31,7 @@ import sys
 from jnpr.junos import Device
 from jnpr.junos.factory.table import Table
 from jnpr.junos.factory.view import View
-from jnpr.junos.op.arp import LLDPNeighborTable
+from jnpr.junos.op.lldp import LLDPNeighborTable
 import json
 
 class TableJSONEncoder(json.JSONEncoder):
