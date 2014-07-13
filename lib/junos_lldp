@@ -70,7 +70,7 @@ def main():
     lldp_results = []
     try:
         lldp = LLDPNeighborTable(dev)
-        lddp.get()
+        lldp.get()
         lldp = json.loads(json.dumps(lldp, cls=TableJSONEncoder))
     except Exception as err:
         dev.close()
