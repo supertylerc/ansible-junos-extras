@@ -103,23 +103,23 @@ fw01.hq.example.com        : ok=2    changed=0    unreachable=0 failed=0
 This module assumes your username is the same as the user running the
 playbook.  You can modify this by adding the `user` variable.
 
-This module _requires_ a varible, `peers`.  This variable __must__ be a
+This module has a `peers` variable.  If used, this variable __must__ be a
 list, even if there is only one item/element in the list.  This is where
 you should put the IP addresses of the IPSec peers you're interested in.
+If you don't specify this variable, the module will return all IKE and
+IPSec (Phase 1 and Phase 2, respectively) security associations.
 
 ## Known Issues
 
-* No default value for `peers`
+None!
 
 ## Version
 
-`1.0.0`
+`1.1.0`
 
 ## Author
 
-Tyler Christiansen
-[web][1]
-[twitter][2]
+Tyler Christiansen [web][1] | [twitter][2] |
 <a href="mailto:tyler@oss-stack.io?GitHub - ansible-junos-ipsec">e-mail</a>
 
 ## License
