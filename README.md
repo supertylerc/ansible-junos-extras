@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/supertylerc/ansible-junos-extras.png?label=ready&title=Ready)](https://waffle.io/supertylerc/ansible-junos-extras)
 # ansible-junos-extras
 
 ## About
