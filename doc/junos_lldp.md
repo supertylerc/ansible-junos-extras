@@ -11,16 +11,16 @@ The below playbook might be called `junos_lldp.yml`.
 ```yaml
 ---
 - name: LLDP Data
-  hosts: cs01.hq.example.com
+  hosts: firewalls
   connection: local
   gather_facts: no
   tasks:
-    - name: Ping Hosts in Arp Cache
+    - name: Get LLDP Info
       junos_lldp:
         host={{ inventory_hostname }}
         user=tyler
       register: lldp_neighbors
-    - name: LLDP Neighbor Information
+    - name: Display LLDP Neighbor Information
       debug: var=lldp_neighbors.results
 ```
 
@@ -37,6 +37,50 @@ ansible-playbook ./junos_lldp.yml
 ```
 
 > This assumes you're currently in the same directory as your playbook.
+
+### Example Output
+
+```bash
+╭─tyler at deathstar in /etc/ansible using ‹ruby-2.1.1› 14-07-12 - 23:26:15
+╰─○ ansible-playbook junos_lldp.yml
+
+PLAY [LLDP Data]
+**************************************************************
+
+TASK: [Get LLDP Info]
+*********************************************************
+ok: [fw01.sj.example.com]
+
+TASK: [Display LLDP Neighbor Information]
+*************************************
+ok: [fw01.sj.example.com] => {
+    "lldp_neighbors.results": {
+        "xe-0/0/26.0": {
+            "local_int": "xe-0/0/26.0",
+            "local_parent": "-",
+            "remote_chassis-id": "2c:21:72:a0:1d:00",
+            "remote_port-desc": "xe-2/1/0.0",
+            "remote_sysname": "as01.example.com",
+            "remote_type": "Mac address"
+        },
+        "xe-1/0/30.0": {
+            "local_int": "xe-1/0/30.0",
+            "local_parent": "-",
+            "remote_chassis-id": "2c:21:72:a0:1d:00",
+            "remote_port-desc": "xe-0/1/0.0",
+            "remote_sysname": "as01.example.com",
+            "remote_type": "Mac address"
+        }
+    }
+}
+
+PLAY RECAP
+********************************************************************
+fw01.sj.example.com         : ok=2    changed=0    unreachable=0 failed=0
+
+╭─tyler at deathstar in /etc/ansible using ‹ruby-2.1.1› 14-07-12 - 23:26:26
+╰─○
+```
 
 ### Variables
 
