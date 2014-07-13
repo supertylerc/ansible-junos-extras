@@ -10,6 +10,8 @@ tools:
     filter:
       excluded_paths:
         - lib/*
+      paths:
+        - test/*
   pylint:
     python_version: 2
 checks:
