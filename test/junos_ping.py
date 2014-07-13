@@ -1,0 +1,124 @@
+#!/usr/bin/env python2.7
+
+DOCUMENTATION = '''
+---
+module: junos_ping
+author: Tyler Christiansen
+version_added: "0.0.1"
+short_description: Ping hosts in ARP table
+description:
+  - Pings hosts in ARP table and optionally logs them for future use.
+requirements:
+  - py-junos-eznc
+options:
+  host:
+    description:
+      - should be {{ inventory_hostname }}
+    required: true
+  user:
+    description:
+      - login user-name
+    required: false
+    default: $USER
+  passwd:
+    description:
+      - login password
+    required: false
+    default: assumes ssh-key
+  checktype:
+    description:
+      - 'pre' or 'post'.  'pre' checks the ARP table.  'post' takes
+        `targets` and checks those hosts.
+    required: false
+    default: pre
+  targets:
+    description:
+      - path to the local server directory where host availability is
+        recorded.
+    required: false
+    default: none
+'''
+
+import sys
+from jnpr.junos import Device
+from jnpr.junos.factory.table import Table
+from jnpr.junos.factory.view import View
+from jnpr.junos.op.arp import ArpTable
+import json
+
+class TableJSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, View):
+            obj = dict(obj.items())
+        elif isinstance(obj, Table):
+            obj = {item.name: item for item in obj}
+        elif isinstance(obj, lxml.etree._Element):
+            def recursive_dict(element):
+                return element.tag, dict(map(recursive_dict, element)) \
+                       or element.text
+            _, obj = recursive_dict(obj)
+        else:
+            obj = super(TableJSONEncoder, self).default(obj)
+        return obj
+
+def main():
+    module = AnsibleModule(
+        argument_spec=dict(
+            host=dict(required=True),
+            targets=dict(required=False, default=None),
+            checktype=dict(required=False, default='pre'),
+            user=dict(required=False, default='tyler'),
+            passwd=dict(required=False, default=None)),
+        supports_check_mode=False)
+
+    m_args = module.params
+    m_results = dict(changed=False)
+    dev = Device(m_args['host'], user=m_args['user'], passwd=m_args['passwd'])
+    try:
+        dev.open()
+        results = {}
+        ping_results = []
+        if m_args['checktype'] == 'pre':
+            try:
+                arp = ArpTable(dev)
+                arp.get()
+                arp_json = json.loads(json.dumps(arp, cls=TableJSONEncoder))
+                for entry in arp_json:
+                    ping_results.append(dev.rpc.ping
+                                        (host=arp_json[entry]['ip_address'],
+                                         count='3', rapid=True))
+                for entry in ping_results:
+                    ip = entry.findtext('target-ip').replace('\n', '')
+                    results[ip] = {}
+                    if entry.findtext('ping-success') is not None:
+                        results[ip]['success'] = True
+                    else:
+                        results[ip]['success'] = False
+            except Exception as err:
+                module.fail_json(msg=err)
+        elif m_args['targets'] is not None:
+            import ast
+            m_args['targets'] = ast.literal_eval(m_args['targets'])
+            for entry in m_args['targets']:
+                if m_args['targets'][entry]['success'] == True:
+                    ping_results.append(dev.rpc.ping
+                                        (host=entry, count='3', rapid=True))
+            for entry in ping_results:
+                ip = entry.findtext('target-ip').replace('\n', '')
+                results[ip] = {}
+                if entry.findtext('ping-success') is not None:
+                    results[ip]['success'] = True
+                else:
+                    results[ip]['success'] = False
+        else:
+            module.fail_json(msg='You specified a post-check \
+                             but did not specify targets.')
+    except Exception as err:
+        msg = 'unable to connect to {}: {}'.format(m_args['host'], str(err))
+        module.fail_json(msg=msg)
+        return
+    else:
+        dev.close()
+        module.exit_json(results=results)
+from ansible.module_utils.basic import *
+main()
