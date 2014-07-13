@@ -148,11 +148,11 @@ ok: [fw01.hq.example.com]
 
 TASK: [Get Pre-Change LLDP Information]
 *********************************************************
-ok: [fw01.sj.example.com]
+ok: [fw01.hq.example.com]
 
 TASK: [Display LLDP Neighbor Information]
 *************************************
-ok: [fw01.sj.example.com] => {
+ok: [fw01.hq.example.com] => {
     "lldp_neighbors.results": {
         "xe-0/0/26.0": {
             "local_int": "xe-0/0/26.0",
