@@ -8,14 +8,15 @@ functions, but they largely focus on retrieving operational data.
 
 ## Installation
 
-### Latest
+### Bleeding Edge
 
-The `master` branch is considered the latest and greatest.  If you are
-paranoid about stability, though, you should follow the instructions for
-the latest stable tag.
+`ansible-junos-extras` is a [rolling release][7].  The `master` branch
+should always be considered stable.  Individual feature branches exist
+for development code, and "more stable" releases are available in tagged
+or milestone releases.
 
-> Despite the above statement, `master` is always considered stable and
-> is used as the production release internally.
+> Although `master` is considered stable, if you are paranoid about
+> stability, stick to a tagged version.
 
 Run the following commands:
 
@@ -46,6 +47,11 @@ git clone https://github.com/supertylerc/ansible-junos-extras.git -b v1.0.0
 cd
 echo "source $HOME/src/ansible-junos-extras/env-setup" >> $HOME/.zshrc
 ```
+
+### Development
+
+Development work is performed on branches.  There is a separate branch
+for each feature or bug fix.
 
 ## Usage
 
@@ -239,14 +245,30 @@ the source code.
 This issue is not insurmountable; however, it was decided that this
 issue should not block the first alpha release.
 
-### Contributing!
+## Contributing!
 
-Please contribute!  If you can help resolve these issues, that would be
-awesome.  Or any other issues you discover or features you want.
-Actually, I'd really just love any sort of contribution.
+Please contribute!
 
-If you write a module, it would be really awesome to have it included
-here.
+If you want to add new features to existing modules, create new
+features, fix bugs, or just update documentation, please do so!  I only
+ask that you dedicate a branch to an individual feature/task/update, and
+that it follow the following naming conventions:
+
+* `feat/` for a new feature or module
+* `bug/` for a bug fix
+* `doc/` for a documentation update
+
+## Roadmap
+
+`master` follows the latest tagged version.  The latest tagged version is
+`v1.0.0`.
+
+The next milestone, [`v1.1.0`][8], will include the following:
+
+* [GH1][9]: `junos_ipsec_summary`: add default value for 'peers'
+* [GH2][10]: `junos_ping`: add IPv6 support
+* [GH3][11]: `junos_ping`: add 'routing-instance' support
+* [GH4][12]: `junos_lldp`: add LLDP module
 
 ## Credits
 
@@ -260,8 +282,8 @@ here.
 ## Author
 
 Tyler Christiansen
-[web][1]
-[twitter][2]
+
+[web][1] | [twitter][2] |
 <a href="mailto:tyler@oss-stack.io?GitHub - ansible-junos-extras">e-mail</a>
 
 ## License
@@ -274,3 +296,9 @@ Tyler Christiansen
 [4]: LICENSE "BSD 2-Clause License"
 [5]: https://twitter.com/nwkautomaniac "Jeremy Schulman (@nwkautomaniac) on Twitter"
 [6]: https://github.com/Juniper/ansible-junos-stdlib "Ansible Junos Module"
+[7]: https://en.wikipedia.org/wiki/Rolling_release "Rolling Releases"
+[8]: https://github.com/supertylerc/ansible-junos-extras/issues?milestone=1&state=open "ansible-junos-extras v1.1.0"
+[9]: https://github.com/supertylerc/ansible-junos-extras/issues/1 "GH1 - Add Default Value for `peers`"
+[10]: https://github.com/supertylerc/ansible-junos-extras/issues/2 "GH2 - Add IPv6 Support"
+[11]: https://github.com/supertylerc/ansible-junos-extras/issues/3 "GH3 - Add `rounting-instance` Support"
+[12]: https://github.com/supertylerc/ansible-junos-extras/issues/4 "GH4 - Add LLDP Module"
