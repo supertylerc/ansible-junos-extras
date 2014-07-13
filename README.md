@@ -58,6 +58,10 @@ for each feature or bug fix.
 
 ## Usage
 
+While the sections below go over general usage, they may not cover every
+module available.  For a more complete listing of modules and how to use
+them, see the `doc` directory in this repository.
+
 ### Example Playbook
 
 The below playbook might be called `junos_baseline.yml`.
@@ -73,12 +77,12 @@ The below playbook might be called `junos_baseline.yml`.
       - 1.1.1.1
       - 2.2.2.2
   tasks:
-    - name: Get IPSec Information
+    - name: Get Pre-Change IPSec Information
       junos_ipsec_summary:
         host={{ inventory_hostname }}
         peers="{{ peers }}"
       register: ipsec
-    - name: Get BGP Information
+    - name: Get Pre-Change BGP Information
       junos_bgp_summary:
         host={{ inventory_hostname }}
       register: bgp
@@ -86,13 +90,21 @@ The below playbook might be called `junos_baseline.yml`.
       junos_ping:
         host={{ inventory_hostname }}
       register: ping
-    - name: Pre-Change IPSec Information
+    - name: Get Pre-Change LLDP Information
+      junos_lldp:
+        host={{ inventory_hostname }}
+        user=tyler
+      register: lldp_neighbors
+    - name: Display Pre-Change LLDP Neighbor Information
+      debug:
+        var=lldp_neighbors.results
+    - name: Display Pre-Change IPSec Information
       debug:
         var=ipsec.results
-    - name: Pre-Change BGP Information
+    - name: Display Pre-Change BGP Information
       debug:
         var=bgp.results
-    - name: Pre-Change Ping Information
+    - name: Display Pre-Change Ping Information
       debug:
         var=ping.results
 ```
@@ -122,11 +134,11 @@ ansible-playbook ./junos_baseline.yml
 PLAY [Baseline]
 ***************************************************************
 
-TASK: [Get IPSec Information]
+TASK: [Get Pre-Change IPSec Information]
 *************************************************
 ok: [fw01.hq.example.com]
 
-TASK: [Get BGP Information]
+TASK: [Get Pre-Change BGP Information]
 ***************************************************
 ok: [fw01.hq.example.com]
 
@@ -134,7 +146,34 @@ TASK: [Pre-Change Ping]
 *******************************************************
 ok: [fw01.hq.example.com]
 
-TASK: [Pre-Change IPSec Information]
+TASK: [Get Pre-Change LLDP Information]
+*********************************************************
+ok: [fw01.sj.example.com]
+
+TASK: [Display LLDP Neighbor Information]
+*************************************
+ok: [fw01.sj.example.com] => {
+    "lldp_neighbors.results": {
+        "xe-0/0/26.0": {
+            "local_int": "xe-0/0/26.0",
+            "local_parent": "-",
+            "remote_chassis-id": "2c:21:72:a0:1d:00",
+            "remote_port-desc": "xe-2/1/0.0",
+            "remote_sysname": "as01.example.com",
+            "remote_type": "Mac address"
+        },
+        "xe-1/0/30.0": {
+            "local_int": "xe-1/0/30.0",
+            "local_parent": "-",
+            "remote_chassis-id": "2c:21:72:a0:1d:00",
+            "remote_port-desc": "xe-0/1/0.0",
+            "remote_sysname": "as01.example.com",
+            "remote_type": "Mac address"
+        }
+    }
+}
+
+TASK: [Display Pre-Change IPSec Information]
 ******************************************
     "ipsec.results": {
 ok: [fw01.hq.example.com] => {
@@ -169,7 +208,7 @@ ok: [fw01.hq.example.com] => {
     }
 }
 
-TASK: [Pre-Change BGP Information]
+TASK: [Display Pre-Change BGP Information]
 ********************************************
 ok: [fw01.hq.example.com] => {
     "bgp.results": {
@@ -196,7 +235,7 @@ ok: [fw01.hq.example.com] => {
     }
 }
 
-TASK: [Pre-Change Ping Information]
+TASK: [Display Pre-Change Ping Information]
 *******************************************
 ok: [fw01.hq.example.com] => {
     "ping.results": {
