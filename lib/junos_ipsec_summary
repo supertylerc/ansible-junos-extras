@@ -64,7 +64,8 @@ def main():
                 ike-security-associations-information'
         sa_info = sa_info.find(base)
     except Exception as err:
-        msg = 'unable to get phase 1 sa info for {}: {}'.format(peer, str(err))
+        msg = 'unable to get phase 1 sa info on {}: \
+               {}'.format(m_args['host'], str(err))
         module.fail_json(msg=msg)
         return
     for sa in sa_info:
@@ -86,7 +87,8 @@ def main():
                 ipsec-security-associations-information'
         sa_info = sa_info.find(p)
     except Exception as err:
-        msg = "can't get phase 2 sa info for {}: {}".format(peer, str(err))
+        msg = "can't get phase 2 sa info for {}:\
+               {}".format(m_args['host'], str(err))
         module.fail_json(msg=msg)
         return
     for sa in sa_info:
