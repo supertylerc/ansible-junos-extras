@@ -18,6 +18,7 @@ The below playbook might be called `junos_ping.yml`.
     - name: Ping Hosts in Arp Cache
       junos_ping:
         host={{ inventory_hostname }}
+        af=all
       register: arp_cache
   - debug: var=arp_cache
 - name: Post-Change Ping
@@ -65,9 +66,12 @@ variable.  The `targets` variable is expected to be a dump of a Python
 `dict`.  It was done this way so that you could easily register
 variables and pass them between multiple `junos_ping` tasks.
 
+`af` can be `inet`, `inet6`, or `all`.  If set `inet`, it will check
+only IPv4 addresses.  If set to `inet6`, it will check IPv6 addresses.
+If set to `all`, it will check both IPv4 and IPv6.
+
 ## Known Issues
 
-* No IPv6
 * No support for multiple routing instances
 
 These issues are not insurmountable; however, it was decided that these

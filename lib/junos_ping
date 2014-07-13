@@ -37,6 +37,11 @@ options:
         recorded.
     required: false
     default: none
+  af:
+    description:
+      - Address Family (AF).  Can be `inet`, `inet6`, or `all`.
+    required: false
+    default: all
 '''
 
 import sys
@@ -68,7 +73,8 @@ def main():
             targets=dict(required=False, default=None),
             checktype=dict(required=False, default='pre'),
             user=dict(required=False, default='tyler'),
-            passwd=dict(required=False, default=None)),
+            passwd=dict(required=False, default=None),
+            af=dict(required=False, default='all')),
         supports_check_mode=False)
 
     m_args = module.params
@@ -79,33 +85,45 @@ def main():
         results = {}
         ping_results = []
         if m_args['checktype'] == 'pre':
-            try:
-                arp = ArpTable(dev)
-                arp.get()
-                arp_json = json.loads(json.dumps(arp, cls=TableJSONEncoder))
-                for entry in arp_json:
-                    ping_results.append(dev.rpc.ping
-                                        (host=arp_json[entry]['ip_address'],
-                                         count='3', rapid=True))
-                for entry in ping_results:
-                    ip = entry.findtext('target-ip').replace('\n', '')
-                    results[ip] = {}
-                    if entry.findtext('ping-success') is not None:
-                        results[ip]['success'] = True
-                    else:
-                        results[ip]['success'] = False
-            except Exception as err:
-                module.fail_json(msg=err)
+            if m_args['af'] != 'inet6':
+                try:
+                    arp = ArpTable(dev)
+                    arp.get()
+                    arp_json = json.loads(json.dumps(arp, cls=TableJSONEncoder))
+                    for entry in arp_json:
+                        ping_results.append(dev.rpc.ping
+                                            (host=arp_json[entry]['ip_address'],
+                                             count='3', rapid=True))
+                    for entry in ping_results:
+                        ip = entry.findtext('target-ip').replace('\n', '')
+                        results[ip] = {}
+                        results[ip]['family'] = "inet"
+                        if entry.findtext('ping-success') is not None:
+                            results[ip]['success'] = True
+                        else:
+                            results[ip]['success'] = False
+                except Exception as err:
+                    module.fail_json(msg=err)
+            if m_args['af'] != 'inet':
+                try:
+                    results['temporary'] = {}
+                    results['temporary']['family'] = "inet6"
+                except Exception as err:
+                    module.fail_json(msg=err)
         elif m_args['targets'] is not None:
             import ast
             m_args['targets'] = ast.literal_eval(m_args['targets'])
             for entry in m_args['targets']:
                 if m_args['targets'][entry]['success'] == True:
-                    ping_results.append(dev.rpc.ping
-                                        (host=entry, count='3', rapid=True))
+                    if m_args['targets'][entry]['family'] == "inet":
+                        ping_results.append(dev.rpc.ping
+                                            (host=entry, count='3', rapid=True))
+                    elif m_args['targets'][entry]['family'] == "inet6":
+                        pass
             for entry in ping_results:
                 ip = entry.findtext('target-ip').replace('\n', '')
                 results[ip] = {}
+                results[ip]['family'] = m_args['targets'][entry]['family']
                 if entry.findtext('ping-success') is not None:
                     results[ip]['success'] = True
                 else:
