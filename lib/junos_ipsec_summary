@@ -23,7 +23,8 @@ options:
   peers:
     description:
       - list of gateway IPs of remote IPSec peers
-    required: true
+    required: false
+    default: all
   passwd:
     description:
       - login password
@@ -42,7 +43,7 @@ def main():
             host=dict(required=True),
             user=dict(required=False, default='tyler'),
             passwd=dict(required=False, default=None),
-            peers=dict(required=True)),
+            peers=dict(required=False, default='all')),
         supports_check_mode=False)
 
     m_args = module.params
@@ -58,7 +59,10 @@ def main():
     results = {"ike": {}, "ipsec": {}}
     for peer in m_args['peers']:
         try:
-            sa_info = dev.rpc.get_ike_security_associations_information(peer_address=peer)
+            if m_args['peers'] == 'all':
+                sa_info = dev.rpc.get_ike_security_associations_information()
+            else:
+                sa_info = dev.rpc.get_ike_security_associations_information(peer_address=peer)
         except Exception as err:
             msg = 'unable to get peer info for {}: {}'.format(peer, str(err))
             module.fail_json(msg=msg)
