@@ -313,6 +313,7 @@ The next milestone, [`v1.1.0`][8], will include the following:
 * [GH2][10]: `junos_ping`: add IPv6 support
 * [GH3][11]: `junos_ping`: add 'routing-instance' support
 * [GH4][12]: `junos_lldp`: add LLDP module
+* [GH8][13]: Add Support for Scrutinizer
 
 ## Credits
 
@@ -346,3 +347,4 @@ Tyler Christiansen
 [10]: https://github.com/supertylerc/ansible-junos-extras/issues/2 "GH2 - Add IPv6 Support"
 [11]: https://github.com/supertylerc/ansible-junos-extras/issues/3 "GH3 - Add `rounting-instance` Support"
 [12]: https://github.com/supertylerc/ansible-junos-extras/issues/4 "GH4 - Add LLDP Module"
+[13]: https://github.com/supertylerc/ansible-junos-extras/issues/8 "GH8 - Add Scrutinizer Support"
