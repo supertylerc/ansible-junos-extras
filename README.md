@@ -1,7 +1,7 @@
 [![Issues in Pending](https://badge.waffle.io/supertylerc/ansible-junos-extras.png?label=pending&title=Pending)](https://waffle.io/supertylerc/ansible-junos-extras)
 [![Issues in Ready](https://badge.waffle.io/supertylerc/ansible-junos-extras.png?label=ready&title=Ready)](https://waffle.io/supertylerc/ansible-junos-extras)
 [![Issues In Progress](https://badge.waffle.io/supertylerc/ansible-junos-extras.png?label=in%20progress&title=In%20Progress)](https://waffle.io/supertylerc/ansible-junos-extras)
-[![Code Health](https://landscape.io/github/supertylerc/ansible-junos-extras/master/landscape.png)](https://landscape.io/github/supertylerc/ansible-junos-extras/master)
+[![Code Quality](https://scrutinizer-ci.com/g/supertylerc/ansible-junos-extras/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/supertylerc/ansible-junos-extras/?branch=master)
 
 # ansible-junos-extras
 
