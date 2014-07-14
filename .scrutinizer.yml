@@ -1,14 +1,14 @@
 # language: python
 imports:
-  - python
+    - python
 tools:
-  python_analyzer:
-    config:
-      metrics: true
-      duplication_detector:
-        enabled: true
-  pylint:
-    python_version: 2
+    python_analyzer:
+        config:
+            metrics: true
+            duplication_detector:
+                enabled: true
+    pylint:
+        python_version: 2
 checks:
     python:
         code_rating: true
