@@ -48,7 +48,6 @@ options:
 '''
 
 import sys
-import os
 from jnpr.junos import Device
 import json
 
@@ -56,7 +55,7 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             host=dict(required=True),
-            user=dict(required=False, default=os.getenv('USER')),
+            user=dict(required=False, default='tyler'),
             passwd=dict(required=False, default=None),
             detail=dict(required=False, default=True),
             route=dict(required=False, default='all'),

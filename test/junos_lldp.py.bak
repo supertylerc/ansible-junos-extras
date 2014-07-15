@@ -28,7 +28,6 @@ options:
 '''
 
 import sys
-import os
 from jnpr.junos import Device
 from jnpr.junos.factory.table import Table
 from jnpr.junos.factory.view import View
@@ -54,7 +53,7 @@ def main():
     module = AnsibleModule(
         argument_spec=dict(
             host=dict(required=True),
-            user=dict(required=False, default=os.getenv('USER')),
+            user=dict(required=False, default='tyler'),
             passwd=dict(required=False, default=None)),
         supports_check_mode=False)
 
