@@ -31,6 +31,47 @@ import sys
 import os
 from jnpr.junos import Device
 import json
+def connect(args):
+    dev = Device(args['host'], user=args['user'], passwd=args['passwd'])
+    try:
+        dev.open()
+    except Exception as err:
+        msg = "Unable to conntect to {}.\n" \
+              "Error: {}".format(args['host'], str(err))
+        module.fail(msg=msg)
+        return
+    else:
+        return dev
+
+def get_bgp_summary(dev):
+    results = {}
+    try:
+        rpc_results = dev.rpc.get_bgp_summary_information()
+    except Exception as err:
+        msg = "Unable to call RPC.  Error: {}".format(str(err))
+        module.fail(msg=msg)
+        return
+    for item in rpc_results:
+        peer = item.findtext('peer-address')
+        if peer:
+            base = 'bgp-rib'
+            address = item.findtext('peer-address')
+            asn = item.findtext('peer-as')
+            state = item.findtext('peer-state')
+            rib = item.findtext('bgp-rib/name')
+            active = item.findtext(base + '/active-prefix-count')
+            received = item.findtext(base + '/received-prefix-count')
+            accepted = item.findtext(base + 'accepted-prefix-count')
+            suppressed = item.findtext(base + '/suppressed-prefix-count')
+            results[peer] = {"address": address,
+                             "asn": asn,
+                             "state": state,
+                             "rib": rib,
+                             "active_prefixes": active,
+                             "received_prefixes": received,
+                             "accepted_prefixes": accepted,
+                             "suppressed_prefixes": suppressed}
+    return results
 
 def main():
     module = AnsibleModule(
@@ -42,28 +83,9 @@ def main():
 
     m_args = module.params
     m_results = dict(changed=False)
-    dev = Device(m_args['host'], user=m_args['user'], passwd=m_args['passwd'])
-    try:
-        dev.open()
-        results = {}
-        rpc_results = dev.rpc.get_bgp_summary_information()
-        for item in rpc_results:
-            peer = item.findtext('peer-address')
-            if peer:
-                results[peer] = {"address": item.findtext('peer-address'),
-                                 "asn": item.findtext('peer-as'),
-                                 "state": item.findtext('peer-state'),
-                                 "rib": item.findtext('bgp-rib/name'),
-                                 "active_prefixes": item.findtext('bgp-rib/active-prefix-count'),
-                                 "received_prefixes": item.findtext('bgp-rib/received-prefix-count'),
-                                 "accepted_prefixes": item.findtext('bgp-rib/accepted-prefix-count'),
-                                 "suppressed_prefixes": item.findtext('bgp-rib/suppressed-prefix-count')}
-    except Exception as err:
-        msg = 'unable to connect to {}: {}'.format(m_args['host'], str(err))
-        module.fail_json(msg=msg)
-        return
-    else:
-        dev.close()
-        module.exit_json(results=results)
+    dev = connect(m_args)
+    results = get_bgp_summary(dev)
+    dev.close()
+    module.exit_json(results=results)
 from ansible.module_utils.basic import *
 main()
