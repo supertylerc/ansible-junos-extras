@@ -33,6 +33,7 @@ from jnpr.junos import Device
 from jnpr.junos.factory.table import Table
 from jnpr.junos.factory.view import View
 from jnpr.junos.op.lldp import LLDPNeighborTable
+from jnpr.junos.exception import RpcError
 import json
 
 class TableJSONEncoder(json.JSONEncoder):
@@ -73,6 +74,24 @@ def main():
         lldp = LLDPNeighborTable(dev)
         lldp.get()
         lldp = json.loads(json.dumps(lldp, cls=TableJSONEncoder))
+    except RpcError as err:
+        ## Ok, so this is really weird.  If I issue the below command (print err),
+        ## then 'rpc_error' magically appears as an attribute of err.
+        ## But without it, I have to dig through the XML to find the error message.
+        ## WTF?
+        #print err
+        msg = ''
+        rpc_error = getattr(err,'rpc_error',None)
+        if rpc_error is None:
+            ## 2003 called.  They want their XML back.
+            errmsg = err.rsp.find('error-message')
+            if errmsg is not None:
+                msg = errmsg.text.strip()
+        else:
+            msg = rpc_error.get('message','')
+        dev.close()
+        module.fail_json(msg=msg)
+        return
     except Exception as err:
         dev.close()
         module.fail_json(msg=err)
